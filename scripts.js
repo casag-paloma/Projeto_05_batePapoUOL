@@ -1,33 +1,33 @@
 //carregar as mensagens
 let chat;
 let nomeUsuario;
-let dados
+let dados;
+let mensagemDigitada;
 
 function pedirNome(){
-    nomeUsuario = prompt('Qual a sua graça?');
+    nomeUsuario = prompt('Qual é o seu nome de usuário?');
 }
 
 function cadastrarNome(){
     pedirNome();
-    console.log(nomeUsuario);
     dados = {
         name: nomeUsuario
       };
-    console.log(dados);
     const promessa = axios.post('https://mock-api.driven.com.br/api/v6/uol/participants', dados);
     promessa.then(tratarSucesso);
     promessa.catch(tratarError);
+
 }
 
 function tratarSucesso(resposta){
-    console.log(dados);
     const idInteval = setInterval(manterConexao, 4000);
     console.log(idInteval);
+    buscarMensagens();
+    const idInteval2 = setInterval(NovasMensagens, 3000);
+    console.log(idInteval2);
 }
 
 function tratarError(error){
-    console.log('deu bad');
-    console.log(error.response);
     if(error.response.status === 400){
         console.log('se cadastre de novo');
         cadastrarNome();
@@ -52,15 +52,12 @@ function NovasMensagens(){
 }
 
 function processarResposta(resposta){
-    console.log(resposta.data);
     chat = resposta.data;
-    console.log(chat.length);
     carregarMensagens();
 }
 
 function carregarMensagens(){
     const conversas = document.querySelector(".main");
-    console.log(conversas);
     conversas.innerHTML = "";
     for(let i = 0; i < chat.length; i++){
         if(chat[i].type === "status"){
@@ -100,23 +97,36 @@ function carregarMensagens(){
 function rolagemAutomática(){
     const mensagens = document.querySelectorAll(".mensagem");
     const ultimaMensagem = mensagens[(mensagens.length - 1)]
-    console.log(ultimaMensagem);
     ultimaMensagem.scrollIntoView();
 }
 
+function enviarMensagens(){
+    mensagemDigitada = document.querySelector('input');
+    console.log(mensagemDigitada.value)
+
+    const mensagemEnviada = {
+        from: `${nomeUsuario}`,
+        to: "Todos",
+        text: `${mensagemDigitada.value}`,
+        type: "message" 
+    }
+
+    console.log(mensagemEnviada)
+
+    const promise = axios.post('https://mock-api.driven.com.br/api/v6/uol/messages', mensagemEnviada);
+    promise.then(NovasMensagens2);
+    promise.catch(tratarError2);
+
+}
+
+function NovasMensagens2(){
+    NovasMensagens();
+    mensagemDigitada.value = "";
+    console.log('zerou mensagem');
+}
+
+function tratarError2(){
+    window.location.reload();
+}
 
 cadastrarNome();
-buscarMensagens();
-const idInteval = setInterval(NovasMensagens, 3000);
-console.log(idInteval);
-
-
-
-
-//{
-//from: "João",
- //   to: "Todos",
- //   text: "entra na sala...",
-  //  type: "status",
-    //time: "08:01:17"
-//},
