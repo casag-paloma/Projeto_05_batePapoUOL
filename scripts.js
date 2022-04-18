@@ -3,6 +3,9 @@ let chat;
 let nomeUsuario;
 let dados;
 let mensagemDigitada;
+let nomeEnviado;
+let tipoMensagem;
+let msgReservada = document.querySelector(".reservado");
 
 function pedirNome(){
     nomeUsuario = prompt('Qual é o seu nome de usuário?');
@@ -21,15 +24,12 @@ function cadastrarNome(){
 
 function tratarSucesso(resposta){
     const idInteval = setInterval(manterConexao, 4000);
-    console.log(idInteval);
     buscarMensagens();
     const idInteval2 = setInterval(NovasMensagens, 3000);
-    console.log(idInteval2);
 }
 
 function tratarError(error){
     if(error.response.status === 400){
-        console.log('se cadastre de novo');
         cadastrarNome();
     }
 
@@ -37,8 +37,6 @@ function tratarError(error){
 
 function manterConexao(){
     const promessa = axios.post('https://mock-api.driven.com.br/api/v6/uol/status', dados);
-    console.log('ta indoo..')
-
 }
 
 function buscarMensagens(){
@@ -69,7 +67,7 @@ function carregarMensagens(){
              </div> ` ;
         }
         
-        if(chat[i].type === "private_message" && chat[i].to === nomeUsuario){
+        if(chat[i].type === "private_message" && (chat[i].to === nomeUsuario || chat[i].from === nomeUsuario)){
             conversas.innerHTML +=
             `<div class="mensagem msg_privada"> 
             <p class="horario" > ${chat[i].time} </p> 
@@ -102,16 +100,13 @@ function rolagemAutomática(){
 
 function enviarMensagens(){
     mensagemDigitada = document.querySelector('input');
-    console.log(mensagemDigitada.value)
 
     const mensagemEnviada = {
         from: `${nomeUsuario}`,
-        to: "Todos",
+        to: `${nomeEnviado}`,
         text: `${mensagemDigitada.value}`,
-        type: "message" 
+        type: `${tipoMensagem}` 
     }
-
-    console.log(mensagemEnviada)
 
     const promise = axios.post('https://mock-api.driven.com.br/api/v6/uol/messages', mensagemEnviada);
     promise.then(NovasMensagens2);
@@ -122,11 +117,106 @@ function enviarMensagens(){
 function NovasMensagens2(){
     NovasMensagens();
     mensagemDigitada.value = "";
-    console.log('zerou mensagem');
 }
 
 function tratarError2(){
     window.location.reload();
 }
 
-cadastrarNome();
+
+//criar bônus --> participantes ativos;
+
+function abrirParticipantes(){
+    const elemento = document.querySelector(".menu-lateral");
+    elemento.classList.remove("escondido");
+}
+
+function escolherParticipante(elemento){
+    nomeEnviado = elemento.querySelector(".nome-icone p").innerHTML;
+    console.log(nomeEnviado);
+    if(nomeEnviado !== "Todos"){
+        msgReservada.innerHTML = `<p class="escondido">Enviando para ${nomeEnviado} (reservadamente)</p>`;
+    }
+    else{
+        msgReservada.innerHTML = "";
+    }
+    const escolhido = document.querySelector(".participantes .escolhido");
+    if(escolhido === null){
+        const marcado = elemento.querySelector(".check");
+        marcado.classList.remove("escondido");
+        marcado.classList.add("escolhido");
+    } else{
+        escolhido.classList.add("escondido");
+        escolhido.classList.remove("escolhido");
+        const marcado = elemento.querySelector(".check");
+        marcado.classList.remove("escondido");
+        marcado.classList.add("escolhido");
+    }
+}
+
+function escolherVisibilidade (elemento){
+    tipoMensagem = elemento.querySelector(".nome-icone p").innerHTML;
+    console.log(msgReservada);
+    console.log(msgReservada.querySelector("p"));
+    let textoMsgResevada = msgReservada.querySelector("p");
+
+    if(tipoMensagem === "Público"){
+        tipoMensagem = "message";
+    } else{
+        tipoMensagem = "private_message"
+        textoMsgResevada.classList.remove("escondido");
+    }
+    const escolhido = document.querySelector(".visibilidade .escolhido");
+    if(escolhido === null){
+        const marcado = elemento.querySelector(".check");
+        marcado.classList.remove("escondido");
+        marcado.classList.add("escolhido");
+    } else{
+        escolhido.classList.add("escondido");
+        escolhido.classList.remove("escolhido");
+        const marcado = elemento.querySelector(".check");
+        marcado.classList.remove("escondido");
+        marcado.classList.add("escolhido");
+    }
+}
+
+function retornarChat(){
+    const elemento = document.querySelector(".menu-lateral");
+    elemento.classList.add("escondido");
+}
+
+function solicitarParticipantes(){
+    const promise = axios.get('https://mock-api.driven.com.br/api/v6/uol/participants');
+    promise.then(addParticipantes)
+}
+
+function addParticipantes(response){
+    let listaParticipantes = document.querySelector(".participantes-ativos")
+    listaParticipantes.innerHTML = ` 
+    <p>Escolha um contato para enviar mensagem: </p>
+        <div class="ativo" onclick="escolherParticipante(this)">
+            <div class="nome-icone">
+            <ion-icon name="people"></ion-icon>
+            <p>Todos</p>
+        </div>
+        <ion-icon class="check escondido" name="checkmark-outline"></ion-icon>
+        </div>`
+   
+    for(let i=0; i< response.data.length; i++){
+        let nomeParticipantes = response.data[i].name;
+        listaParticipantes.innerHTML += `
+        <div class="ativo" onclick="escolherParticipante(this)">
+                <div class="nome-icone">
+                    <ion-icon name="person-circle"></ion-icon>
+                    <p>${nomeParticipantes}</p>
+                </div>
+                <ion-icon class="check escondido" name="checkmark-outline"></ion-icon>
+
+            </div>
+        `
+    }
+}
+
+//cadastrarNome();
+
+solicitarParticipantes();

@@ -13,16 +13,67 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 </head>
 <body>
+
+    <div class="menu-lateral escondido ">
+        <div class="lado-esquerdo" onclick="retornarChat()"></div>
+        <div class="participantes">
+            <div class="participantes-ativos">
+                <p>Escolha um contato para enviar mensagem: </p>
+            <div class="ativo" onclick="escolherParticipante(this)">
+                <div class="nome-icone">
+                    <ion-icon name="people"></ion-icon>
+                    <p>Todos</p>
+                </div>
+                
+                <ion-icon class="check escondido" name="checkmark-outline"></ion-icon>
+            </div>
+            <div class="ativo" onclick="escolherParticipante(this)">
+                <div class="nome-icone">
+                    <ion-icon name="person-circle"></ion-icon>
+                    <p>nome</p>
+                </div>
+                <ion-icon class="check escondido" name="checkmark-outline"></ion-icon>
+
+            </div>
+            </div>
+            
+            <p>Escolha a visibilidade: </p>
+            <div class="visibilidade" onclick="escolherVisibilidade(this)">
+                <div class="nome-icone">
+                    <ion-icon name="lock-open"></ion-icon> 
+                    <p>Público</p>
+                </div>
+               
+                <ion-icon class="check escondido" name="checkmark-outline"></ion-icon>
+            </div>
+            <div class="visibilidade" onclick=" escolherVisibilidade(this)">
+                <div class="nome-icone">
+                    <ion-icon name="lock-closed"></ion-icon>
+                    <p>Reservadamente</p>
+                </div>
+                
+                <ion-icon class="check escondido" name="checkmark-outline"></ion-icon>
+            </div>
+            
+
+
+        </div>
+    </div>
     <div class="top_bar">
         <img src="logo_oul.png" alt="">
-        <ion-icon name="people"></ion-icon>
+        <ion-icon name="people" onclick="abrirParticipantes()"></ion-icon>
     </div>
+
     <div class="main">
 
     </div>
 
     <div class="bottom_bar">
-        <input type="text" placeholder="Escreva aqui...">
+        <div class="texto">
+            <input type="text" placeholder="Escreva aqui...">
+            <div class="reservado"></div>
+        </div>
+        
         <ion-icon name="paper-plane-outline" onclick="enviarMensagens()"></ion-icon>
     </div>
     
