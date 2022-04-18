@@ -1,4 +1,3 @@
-//carregar as mensagens
 let chat;
 let nomeUsuario;
 let dados;
@@ -61,31 +60,21 @@ function carregarMensagens(){
         if(chat[i].type === "status"){
             conversas.innerHTML +=
              `<div class=" mensagem msg_status"> 
-                <p class="horario" >${chat[i].time}  </p> 
-                <p class="nome"> ${chat[i].from} </p> 
-                <p>${chat[i].text}</p> 
+             <p> <span class="horario">${chat[i].time}</span> <span class="nome"> ${chat[i].from}</span> entra na sala ...
              </div> ` ;
         }
         
         if(chat[i].type === "private_message" && (chat[i].to === nomeUsuario || chat[i].from === nomeUsuario)){
             conversas.innerHTML +=
             `<div class="mensagem msg_privada"> 
-            <p class="horario" > ${chat[i].time} </p> 
-            <p class="nome"> ${chat[i].from} </p> 
-            <p>reservadamente para</p> 
-            <p class="nome"> ${chat[i].to}: </p> 
-            <p>${chat[i].text}</p>
+            <p> <span class="horario">${chat[i].time}</span> <span class="nome"> ${chat[i].from}</span> reservadamente para <span class="nome">${chat[i].to}:</span> ${chat[i].text}
             </div>`;
         }
     
         if(chat[i].type === "message"){
             conversas.innerHTML +=
             `<div class="mensagem"> 
-            <p class="horario" > ${chat[i].time} </p> 
-            <p class="nome"> ${chat[i].from} </p> 
-            <p>para</p>  
-            <p class="nome"> ${chat[i].to}: </p> 
-            <p>${chat[i].text}</p> 
+            <p> <span class="horario">${chat[i].time}</span> <span class="nome"> ${chat[i].from}</span> para <span class="nome">${chat[i].to}:</span> ${chat[i].text}</p> 
             </div>`;
         }
     }
@@ -123,9 +112,6 @@ function tratarError2(){
     window.location.reload();
 }
 
-
-//criar bônus --> participantes ativos;
-
 function abrirParticipantes(){
     const elemento = document.querySelector(".menu-lateral");
     elemento.classList.remove("escondido");
@@ -133,7 +119,6 @@ function abrirParticipantes(){
 
 function escolherParticipante(elemento){
     nomeEnviado = elemento.querySelector(".nome-icone p").innerHTML;
-    console.log(nomeEnviado);
     if(nomeEnviado !== "Todos"){
         msgReservada.innerHTML = `<p class="escondido">Enviando para ${nomeEnviado} (reservadamente)</p>`;
     }
@@ -156,8 +141,6 @@ function escolherParticipante(elemento){
 
 function escolherVisibilidade (elemento){
     tipoMensagem = elemento.querySelector(".nome-icone p").innerHTML;
-    console.log(msgReservada);
-    console.log(msgReservada.querySelector("p"));
     let textoMsgResevada = msgReservada.querySelector("p");
 
     if(tipoMensagem === "Público"){
@@ -217,6 +200,6 @@ function addParticipantes(response){
     }
 }
 
-//cadastrarNome();
+cadastrarNome();
 
 solicitarParticipantes();
